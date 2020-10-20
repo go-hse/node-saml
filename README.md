@@ -27,7 +27,7 @@ User: admin, Password: admin (same as in docker-compose.yml, should be changed)
 * Save settings
 
 * Get/Save XML-File from http://localhost:8080/auth/realms/hse/protocol/saml/descriptor
-* Save Content of <ds:X509Certificate> to /certs/idp_cert.pem
+* Save Content of `<ds:X509Certificate>` to `<projectdir>`/certs/idp_cert.pem
 
 * Goto SAML Keys, Export, Archive Format: PKCS12, example password "1234", Downloaded: keystore.p12
 
@@ -55,9 +55,9 @@ openssl pkcs12 -in keystore.p12 -clcerts -nokeys -out certs/server.crt
 
 6. Login to Keycloak as User
 
-User Login: http://localhost:8080/auth/realms/hse/account/
-
-Sign out
+* User Login: http://localhost:8080/auth/realms/hse/account/
+* Save user name, passwort
+* Sign out
 
 7. Open WebApp:
 
