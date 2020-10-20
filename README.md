@@ -58,7 +58,7 @@ openssl pkcs12 -in keystore.p12 -clcerts -nokeys -out certs/server.crt
 
 * User Login: http://localhost:8080/auth/realms/hse/account/
 
-* Save user name, passwort
+* Save user name, password
  
 * Sign out
 
