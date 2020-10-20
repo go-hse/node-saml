@@ -1,0 +1,152 @@
+/*
+    20.10.2020 (43) 16:16:29
+
+    Example-App for ID-Management with
+    Keycloak: ID Provider
+    Node.js-App: Service Provider
+
+
+    Using the SAML-Protocol
+
+    derived from
+    https://github.com/austincunningham/keycloak-express
+    which uses openid-connect
+
+*/
+
+'use strict';
+const fs = require('fs');
+const express = require('express');
+const session = require('express-session');
+const expressHbs = require('express-handlebars');
+const bodyParser = require('body-parser');
+
+const app = express();
+
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
+
+app.use(function (req, res, next) {
+    console.log('Time: %d', Date.now(), req.method, req.url); // , req.body, req.params
+    next()
+});
+
+// Register 'handelbars' extension with The Mustache Express
+app.engine('hbs', expressHbs({
+    extname: 'hbs',
+    defaultLayout: 'layout.hbs',
+    relativeTo: __dirname
+}));
+app.set('view engine', 'hbs');
+
+let memoryStore = new session.MemoryStore();
+
+// session
+app.use(session({
+    secret: 'thisShouldBeLongAndSecret',
+    resave: false,
+    saveUninitialized: true,
+    store: memoryStore
+}));
+
+
+// unprotected route
+app.get('/', function (req, res) {
+    res.render('index');
+});
+
+
+const NODEPORT = 8100
+app.listen(NODEPORT, function () {
+    console.log(`listening on port ${NODEPORT}`);
+});
+
+/////////////////////////////////////////////////////////////////////////////80
+const saml = require('passport-saml');
+const passport = require('passport');
+
+
+passport.serializeUser((user, done) => {
+    done(null, user);
+});
+
+passport.deserializeUser((user, done) => {
+    done(null, user);
+});
+
+app.use(passport.initialize());
+app.use(passport.session());
+
+const CALLBACK_URL = `http://localhost:${NODEPORT}/login/callback`
+const ISSUER = "node"
+
+// passed as option to docker
+const ENTRY_POINT = "http://localhost:8080/auth/realms/hse/protocol/saml"
+
+const publicKey = fs.readFileSync(__dirname + '/certs/server.crt', 'utf8');
+const privateKey = fs.readFileSync(__dirname + '/certs/key.pem', 'utf8');
+
+const saml_options = {
+    callbackUrl: CALLBACK_URL,
+    issuer: ISSUER,
+    entryPoint: ENTRY_POINT,
+    identifierFormat: null,
+    // The decryptionPvK and privateCert both refer to the local private key 
+    // downloaded from keycloak - client - SAML keys - export (format: pks12)
+    privateCert: privateKey,
+    decryptionPvk: privateKey,
+
+    // IDP public key from the servers meta data
+    cert: fs.readFileSync(__dirname + '/certs/idp_cert.pem', 'utf8'),
+    validateInResponseTo: false,
+    disableRequestedAuthnContext: true,
+}
+
+function saml_callback(profile, done) {
+    console.log('Parsing SAML', profile);
+    const user = {
+        email: profile.email,
+        group: profile.eduPersonAffiliation
+    };
+    return done(null, user);
+}
+
+const samlStrategy = new saml.Strategy(saml_options, saml_callback);
+passport.use('samlStrategy', samlStrategy);
+
+// 
+app.get('/login', passport.authenticate('samlStrategy', { successRedirect: '/saml', failureRedirect: '/auth/fail' }));
+
+
+app.use('/saml', (req, res, next) => {
+    if (req.isAuthenticated()) res.render('saml', { title: 'Logged in' });
+    else res.redirect('/');
+});
+
+
+app.get('/logout', (req, res) => {
+    req.logout();
+    res.redirect('/');
+});
+
+app.post('/login/callback', passport.authenticate('samlStrategy', { failureRedirect: '/auth/fail' }), (req, res, next) => {
+    console.log('SSO Login ################', req.user);
+    res.redirect('/saml');
+    /*
+    for (let k in req) {
+        if (typeof req[k] !== "function") {
+            console.log(k, "::", req[k]);
+        }
+    }
+    */
+
+});
+
+
+const metadata = samlStrategy.generateServiceProviderMetadata(publicKey, publicKey);
+app.get('/metadata',
+    function (req, res) {
+        res.type('application/xml');
+        res.status(200).send(metadata);
+    }
+);

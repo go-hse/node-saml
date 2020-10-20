@@ -1,0 +1,21 @@
+{
+  "name": "id_management",
+  "version": "1.0.0",
+  "description": "Node.js to Keycloak",
+  "author": "Andreas Roessler, andreas.roessler@hs-esslingen.de",
+  "main": "server.js",
+  "license": "MIT License",
+  "repository": "git@github.com:go-hse/idmgmt.git",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.17.1",
+    "express-handlebars": "^5.1.0",
+    "express-session": "^1.17.1",
+    "keycloak-connect": "^11.0.2",
+    "passport": "^0.4.1",
+    "passport-saml": "^1.3.5",
+    "ws": "^7.3.1"
+  }
+}

@@ -1,1 +1,75 @@
-# node-saml
+# ID-Management with Keycloak and Node.js
+
+## Prerequistes
+1. Docker with docker-compose
+2. Node.js for Testing
+
+## SAML with  Keycloak
+1. Start containers:
+
+sh > docker-compose up -d
+
+2. Open Admin-Console
+
+At the first time: patience!
+http://localhost:8080/auth/
+
+User: admin, Password: admin (same as in docker-compose.yml, should be changed) 
+
+3. Configure Keycloak
+Create a realm - hse
+Create a client - node (Client Protocol: saml)
+Configure client node settings:
+Valid Redirect URIs: http://localhost:8100/*
+Master SAML Processing URL: http://localhost:8100/login/callback
+Save settings
+
+Get/Save XML-File from
+http://localhost:8080/auth/realms/hse/protocol/saml/descriptor
+
+Save as descriptor.xml (example is in repo)
+Save Content of <ds:X509Certificate> to /certs/idp_cert.pem
+
+Goto SAML Keys, Export, Archive Format: PKCS12, example password "1234" 
+Downloaded: keystore.p12
+
+
+4. Extract Key and Cert
+
+These keys/certs are stored in nodejs-dir ./certs
+sh> mkdir certs
+sh> openssl pkcs12 -in keystore.p12 -nocerts -out certs/privateKey.pem -passin pass:"1234"
+
+Remove Password from Private Key
+sh> openssl rsa -in certs/privateKey.pem -out certs/key.pem -passin pass:"1234"
+
+Extract server public key
+sh> openssl pkcs12 -in keystore.p12 -clcerts -nokeys -out certs/server.crt
+
+
+5. Add users (see Manage Users) and add password (Credentials)
+
+6. Login to Keycloak as User
+User Login: http://localhost:8080/auth/realms/hse/account/
+Change password, add names, save
+Sign out
+
+7. Open WebApp:
+Install node dependancies:
+sh> npm i
+
+Start Node app
+sh> node app.js
+
+Open Browser with http://localhost:8100/
+Click Login - Keycloak Login-Page should open
+Login as User - autoredirect to protected http://localhost:8100/saml 
+
+SUCCESS!
+
+Credits/Sources: 
+https://www.keycloak.org/docs/latest/getting_started/index.html
+
+Node/Express-App forked from
+https://github.com/austincunningham/keycloak-express
+
