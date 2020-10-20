@@ -22,16 +22,17 @@ User: admin, Password: admin (same as in docker-compose.yml, should be changed)
 * Create a realm - `hse`
 * Create a client - `node` (Client Protocol: saml)
 * Configure client `node` settings:
-* Valid Redirect URIs: http://localhost:8100/*
-* Master SAML Processing URL: http://localhost:8100/login/callback
-* Save settings
+  * Valid Redirect URIs: http://localhost:8100/*
+  * Master SAML Processing URL: http://localhost:8100/login/callback
+  * Save settings
 
 * Get/Save XML-File from http://localhost:8080/auth/realms/hse/protocol/saml/descriptor
-* Save Content of `<ds:X509Certificate>` to `<projectdir>`/certs/idp_cert.pem
+  * Save Content of `<ds:X509Certificate>` to `<projectdir>`/certs/idp_cert.pem
 
-* Goto SAML Keys, Export, Archive Format: PKCS12, example password "1234", Downloaded: `keystore.p12`
+* Goto SAML Keys, Export, Archive Format: PKCS12, example password "1234", 
+  * Downloaded result: `keystore.p12`
 
-4. Extract Key and Cert
+4. Extract Key and Cert from `keystore.p12`
 
 These keys/certs are stored in `<projectdir>/certs`
 
