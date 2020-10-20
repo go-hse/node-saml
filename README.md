@@ -5,11 +5,15 @@
 2. Node.js for Testing
 
 ## SAML with  Keycloak
+
 1. Start containers:
-"""
+
+```bash
 docker-compose up -d
-"""
+```
+
 2. Open Admin-Console
+
 http://localhost:8080/auth/
 
 User: admin, Password: admin (same as in docker-compose.yml, should be changed) 
@@ -34,18 +38,21 @@ Downloaded: keystore.p12
 
 These keys/certs are stored in nodejs-dir ./certs
 
-sh> mkdir certs
-
-sh> openssl pkcs12 -in keystore.p12 -nocerts -out certs/privateKey.pem -passin pass:"1234"
+```bash
+mkdir certs
+openssl pkcs12 -in keystore.p12 -nocerts -out certs/privateKey.pem -passin pass:"1234"
+```
 
 Remove Password from Private Key
-
-sh> openssl rsa -in certs/privateKey.pem -out certs/key.pem -passin pass:"1234"
+```bash
+openssl rsa -in certs/privateKey.pem -out certs/key.pem -passin pass:"1234"
+```
 
 Extract server public key
 
-sh> openssl pkcs12 -in keystore.p12 -clcerts -nokeys -out certs/server.crt
-
+```
+openssl pkcs12 -in keystore.p12 -clcerts -nokeys -out certs/server.crt
+```
 
 5. Add users (see Manage Users)
 
