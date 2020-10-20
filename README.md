@@ -57,16 +57,16 @@ openssl pkcs12 -in keystore.p12 -clcerts -nokeys -out certs/server.crt
 6. Login to Keycloak as User
 
 * User Login: http://localhost:8080/auth/realms/hse/account/
+
 * Save user name, passwort
+ 
 * Sign out
 
-7. Open WebApp:
+7. Open WebApp: http://localhost:8100/
 
-http://localhost:8100/
+* Click Login - Keycloak Login-Page should open
 
-Click Login - Keycloak Login-Page should open
-
-Login as User - Redirect to http://localhost:8100/saml 
+* Login as User - Redirect to http://localhost:8100/saml 
 
 SUCCESS!
 
