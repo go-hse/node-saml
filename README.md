@@ -64,6 +64,20 @@ openssl pkcs12 -in keystore.p12 -clcerts -nokeys -out certs/server.crt
 
 7. Open WebApp: http://localhost:8100/
 
+* Install Node.js with npm (https://nodejs.org/en/)
+
+* In project directory: 
+```bash
+
+# install node dependancies
+npm i
+
+# start node web server
+node app.js
+
+```
+* Open http://localhost:8100/
+
 * Click Login - Keycloak Login-Page should open
 
 * Login as User - Redirect to http://localhost:8100/saml 
