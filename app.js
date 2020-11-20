@@ -16,6 +16,7 @@
 
 'use strict';
 const fs = require('fs');
+const path = require('path');
 const express = require('express');
 const session = require('express-session');
 const expressHbs = require('express-handlebars');
@@ -55,11 +56,51 @@ app.get('/', function (req, res) {
     res.render('index');
 });
 
+app.use( express.static(  path.resolve( __dirname, "public" ) ) );
 
-const NODEPORT = 8100
-app.listen(NODEPORT, function () {
-    console.log(`listening on port ${NODEPORT}`);
+const NODE_PORT = 8100
+
+let http = require('http').createServer(app);
+http.listen(NODE_PORT, () => {
+  console.log('listening on *:', NODE_PORT);
 });
+
+/////////////////////////////////////////////////////////////////////////////80
+// Socket.IO Connection
+let socket_io = require( 'socket.io' )( http );
+
+function IoConnectServer(io_api, callbacks) {
+    let uniqueID = 0;
+    let no_of_clients = 0;
+    io_api.on( 'connection', ( socket )  => {
+        let currentClientID = ++uniqueID;
+        ++no_of_clients;
+        socket.emit( 'init', {id: currentClientID, no_of_clients});
+        socket.on( 'disconnect', function() {
+            --no_of_clients;
+        } );
+        for ( let cbName in callbacks ) {
+            let cb = callbacks[ cbName ];
+            socket.on( cbName, ( o ) => {
+                cb( socket, currentClientID, o );
+            } );
+        }
+    });
+}
+
+let callbacks = {
+    open: function( socket, id, o ) {
+        console.log( "open connection to client", id, o );
+    },
+    update: function( socket, id, o ) {
+        socket.broadcast.emit("update", o); // send to all others
+    }
+};
+
+IoConnectServer(socket_io, callbacks);
+
+
+
 
 /////////////////////////////////////////////////////////////////////////////80
 const saml = require('passport-saml');
@@ -77,7 +118,7 @@ passport.deserializeUser((user, done) => {
 app.use(passport.initialize());
 app.use(passport.session());
 
-const CALLBACK_URL = `http://localhost:${NODEPORT}/login/callback`
+const CALLBACK_URL = `http://localhost:${NODE_PORT}/login/callback`
 const ISSUER = "node"
 
 // passed as option to docker
