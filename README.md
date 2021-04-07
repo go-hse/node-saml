@@ -1,8 +1,11 @@
 # ID-Management with Keycloak and Node.js
 
 ## Prerequistes
+0. Linux OS preferred - may work with Windows, too, but is not tested
 1. Docker with docker-compose
-2. Node.js for Testing
+2. openssl for generation of certificates
+3. Node.js for Testing
+
 
 ## SAML with  Keycloak
 
