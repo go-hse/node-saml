@@ -32,8 +32,8 @@ User: admin, Password: admin (same as in docker-compose.yml, should be changed)
 * Get/Save XML-File from http://localhost:8080/auth/realms/hse/protocol/saml/descriptor
   * Save Content of `<ds:X509Certificate>` to `<projectdir>`/certs/idp_cert.pem
 
-* Goto SAML Keys, Export, Archive Format: PKCS12, example password "1234", 
-  * Downloaded result: `<projectdir>/keystore.p12`
+* Goto SAML Keys, Export, Archive Format: PKCS12, example key/store password "1234", 
+  * Downloaded to: `<projectdir>/keystore.p12`
 
 4. Extract Key and Cert from `keystore.p12`
 
@@ -42,6 +42,8 @@ These keys/certs are stored in `<projectdir>/certs`
 ```bash
 cd <projectdir>
 mkdir certs
+
+# asks for PEM-passphrase
 openssl pkcs12 -in keystore.p12 -nocerts -out certs/privateKey.pem -passin pass:"1234"
 ```
 
@@ -53,7 +55,7 @@ openssl rsa -in certs/privateKey.pem -out certs/key.pem -passin pass:"1234"
 Extract server public key
 
 ```
-openssl pkcs12 -in keystore.p12 -clcerts -nokeys -out certs/server.crt
+openssl pkcs12 -in keystore.p12 -clcerts -nokeys -out certs/server.crt -passin pass:"1234"
 ```
 
 5. Add users (see Manage Users)
