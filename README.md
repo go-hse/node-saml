@@ -19,6 +19,18 @@ docker-compose up -d
 
 http://localhost:8080/auth/
 
+
+Problems with HTTPS?
+
+see: https://stackoverflow.com/questions/30622599/https-required-while-logging-in-to-keycloak-as-admin
+```bash
+docker exec -it {containerID} bash
+cd /opt/jboss/keycloak/bin
+./kcadm.sh config credentials --server http://localhost:8080/auth --realm master --user admin
+./kcadm.sh update realms/master -s sslRequired=NONE
+```
+
+
 User: admin, Password: admin (same as in docker-compose.yml, should be changed) 
 
 3. Configure Keycloak

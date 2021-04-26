@@ -1,4 +1,4 @@
-FROM node:14
+FROM node:15
 
 # Die WORKDIR-Anweisung legt das Verzeichnis fest, in dem während des Build-Vorgangs die RUN-, CMD- und
 # ENTRYPOINT-Anweisungen im Image ausgeführt werden.
