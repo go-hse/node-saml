@@ -22,21 +22,20 @@ http://www.bluepyrami.de:8080/
 // General Purpose STATIC Web Server
 // andreas.roessler@hs-esslingen.de
 // 08.02.2018
-let http = require( 'http' );
-let https = require( 'https' );
-let fs = require( 'fs' );
-let path = require( 'path' );
-let secureport = process.env.SPORT || 8443;
-let standardport = process.env.PORT || 8080;
+const http = require( 'http' );
+const https = require( 'https' );
+const fs = require( 'fs' );
+const path = require( 'path' );
+const secureport = process.env.SPORT || 8443;
+const standardport = process.env.PORT || 8080;
 /////////////////////////////////////////////////////////////////////////////80
-let certdir = "/etc/letsencrypt/live/www.bluepyrami.de";
-let credentials = {
+const certdir = "/etc/letsencrypt/live/www.bluepyrami.de";
+const credentials = {
   key: fs.readFileSync( path.join( certdir, 'privkey.pem' ), "utf8" ),
   cert: fs.readFileSync( path.join( certdir, 'fullchain.pem' ) , "utf8" ),
 };
 /////////////////////////////////////////////////////////////////////////////80
-let express = require( 'express' );
-let app = express();
+const app = express();
 
 app.use("/info", (req, res) => {
   res.send('Hello Info!');
@@ -54,7 +53,7 @@ https.createServer( credentials, app ).listen( secureport, function() {
 /////////////////////////////////////////////////////////////////////////////80
 // Redirect from http standardport 8080 to https
 http.createServer( function( req, res ) {
-  let host = req.headers[ 'host' ].replace( '' + port, '' + secureport );
+  const host = req.headers[ 'host' ].replace( '' + port, '' + secureport );
   res.writeHead( 301, {
     "Location": "https://" + host + req.url
   } );
