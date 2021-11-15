@@ -44,6 +44,12 @@ for ( let i = 2; i < process.argv.length; i++ ) {
     app.use( express.static( path_string ) );
   }
 }
+
+app.use((req, res) => {
+  res.send('Hello there !');
+});
+
+
 /////////////////////////////////////////////////////////////////////////////80
 https.createServer( credentials, app ).listen( secureport, function() {
   console.log( '%s Node HTTPS server started on port %d ...', Date( Date.now() ), secureport );
