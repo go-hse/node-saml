@@ -23,8 +23,8 @@ Key is saved at:         /etc/letsencrypt/live/www.bluepyrami.de/privkey.pem
 let https = require( 'https' );
 let fs = require( 'fs' );
 let path = require( 'path' );
-let secureport = process.env.SPORT || 443;
-let port = process.env.PORT || 80;
+let secureport = process.env.SPORT || 8443;
+let port = process.env.PORT || 8080;
 let publicdir = "public";
 let scriptdir = path.dirname( process.argv[ 1 ] );
 /////////////////////////////////////////////////////////////////////////////80
