@@ -27,9 +27,7 @@ let https = require( 'https' );
 let fs = require( 'fs' );
 let path = require( 'path' );
 let secureport = process.env.SPORT || 8443;
-let port = process.env.PORT || 8080;
-let publicdir = "public";
-let scriptdir = path.dirname( process.argv[ 1 ] );
+let standardport = process.env.PORT || 8080;
 /////////////////////////////////////////////////////////////////////////////80
 let certdir = "/etc/letsencrypt/live/www.bluepyrami.de";
 let credentials = {
@@ -40,10 +38,13 @@ let credentials = {
 let express = require( 'express' );
 let app = express();
 
-app.use((req, res) => {
-  res.send('Hello there !');
+app.use("/info" (req, res) => {
+  res.send('Hello Info!');
 });
 
+app.use((req, res) => {
+  res.send('Hello All!');
+});
 
 /////////////////////////////////////////////////////////////////////////////80
 https.createServer( credentials, app ).listen( secureport, function() {
@@ -51,13 +52,13 @@ https.createServer( credentials, app ).listen( secureport, function() {
 } );
 
 /////////////////////////////////////////////////////////////////////////////80
-// Redirect from http port 8080 to https
+// Redirect from http standardport 8080 to https
 http.createServer( function( req, res ) {
   let host = req.headers[ 'host' ].replace( '' + port, '' + secureport );
   res.writeHead( 301, {
     "Location": "https://" + host + req.url
   } );
   res.end();
-} ).listen( port, function() {
-  console.log( '%s Node HTTP redirect started on port %d ...', Date( Date.now() ), port );
+} ).listen( standardport, function() {
+  console.log( '%s Node HTTP redirect started on port %d ...', Date( Date.now() ), standardport );
 } );
