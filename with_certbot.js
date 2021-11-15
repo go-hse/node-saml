@@ -30,9 +30,9 @@ let scriptdir = path.dirname( process.argv[ 1 ] );
 /////////////////////////////////////////////////////////////////////////////80
 let certdir = "/etc/letsencrypt/live/www.bluepyrami.de";
 let credentials = {
-  key: fs.readFileSync( path.join( certdir, 'privkey.pem' ) ),
-  cert: fs.readFileSync( path.join( certdir, 'cert.pem' ) ),
-  ca: fs.readFileSync( path.join( certdir, 'chain.pem' ) )
+  key: fs.readFileSync( path.join( certdir, 'privkey.pem' ), "utf8" ),
+  cert: fs.readFileSync( path.join( certdir, 'cert.pem' ) , "utf8" ),
+  ca: fs.readFileSync( path.join( certdir, 'chain.pem' ), "utf8"  )
 };
 /////////////////////////////////////////////////////////////////////////////80
 let express = require( 'express' );
