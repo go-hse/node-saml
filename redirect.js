@@ -28,6 +28,9 @@ const fs = require( 'fs' );
 const path = require( 'path' );
 const secureport = process.env.SPORT || 8443;
 const standardport = process.env.PORT || 8080;
+
+const API_SERVICE_URL = "https://jsonplaceholder.typicode.com";
+
 /////////////////////////////////////////////////////////////////////////////80
 const certdir = "/etc/letsencrypt/live/www.bluepyrami.de";
 const credentials = {
@@ -44,9 +47,18 @@ app.use("/info", (req, res) => {
   res.send('Hello Info!');
 });
 
+app.use('/json_placeholder', createProxyMiddleware({
+   target: API_SERVICE_URL,
+   changeOrigin: true,
+   pathRewrite: {
+       [`^/json_placeholder`]: '',
+   },
+}));
+
 app.use((req, res) => {
   res.send('Hello All!');
 });
+
 
 /////////////////////////////////////////////////////////////////////////////80
 https.createServer( credentials, app ).listen( secureport, function() {
