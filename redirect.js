@@ -38,7 +38,7 @@ let credentials = {
 let express = require( 'express' );
 let app = express();
 
-app.use("/info" (req, res) => {
+app.use("/info", (req, res) => {
   res.send('Hello Info!');
 });
 
