@@ -36,6 +36,8 @@ const credentials = {
 };
 /////////////////////////////////////////////////////////////////////////////80
 const express = require('express');
+const { createProxyMiddleware } = require('http-proxy-middleware');
+
 const app = express();
 
 app.use("/info", (req, res) => {
