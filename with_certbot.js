@@ -28,7 +28,7 @@ let port = process.env.PORT || 80;
 let publicdir = "public";
 let scriptdir = path.dirname( process.argv[ 1 ] );
 /////////////////////////////////////////////////////////////////////////////80
-let certdir = path.join( scriptdir, 'certs' );
+let certdir = "/etc/letsencrypt/live/www.bluepyrami.de";
 let credentials = {
   key: fs.readFileSync( path.join( certdir, 'privkey.pem' ) ),
   cert: fs.readFileSync( path.join( certdir, 'fullchain.pem' ) )
