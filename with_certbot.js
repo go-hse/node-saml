@@ -14,6 +14,7 @@ Certificate is saved at: /etc/letsencrypt/live/www.bluepyrami.de/fullchain.pem
 Key is saved at:         /etc/letsencrypt/live/www.bluepyrami.de/privkey.pem
 
 https://www.bluepyrami.de:8443/
+http://www.bluepyrami.de:8080/
 
 */
 
@@ -33,8 +34,7 @@ let scriptdir = path.dirname( process.argv[ 1 ] );
 let certdir = "/etc/letsencrypt/live/www.bluepyrami.de";
 let credentials = {
   key: fs.readFileSync( path.join( certdir, 'privkey.pem' ), "utf8" ),
-  cert: fs.readFileSync( path.join( certdir, 'cert.pem' ) , "utf8" ),
-  ca: fs.readFileSync( path.join( certdir, 'chain.pem' ), "utf8"  )
+  cert: fs.readFileSync( path.join( certdir, 'fullchain.pem' ) , "utf8" ),
 };
 /////////////////////////////////////////////////////////////////////////////80
 let express = require( 'express' );
