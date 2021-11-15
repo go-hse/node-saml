@@ -52,7 +52,6 @@ https.createServer( credentials, app ).listen( secureport, function() {
 
 /////////////////////////////////////////////////////////////////////////////80
 // Redirect from http port 8080 to https
-let http = require( 'http' );
 http.createServer( function( req, res ) {
   let host = req.headers[ 'host' ].replace( '' + port, '' + secureport );
   res.writeHead( 301, {
