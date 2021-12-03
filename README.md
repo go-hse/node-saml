@@ -29,8 +29,6 @@ cd /opt/jboss/keycloak/bin
 ./kcadm.sh config credentials --server http://localhost:8080/auth --realm master --user admin
 ./kcadm.sh update realms/master -s sslRequired=NONE
 ```
-
-
 User: admin, Password: admin (same as in docker-compose.yml, should be changed) 
 
 3. Configure Keycloak
@@ -44,31 +42,13 @@ User: admin, Password: admin (same as in docker-compose.yml, should be changed)
 * Get/Save XML-File from http://localhost:8080/auth/realms/hse/protocol/saml/descriptor
   * Save Content of `<ds:X509Certificate>` to `<projectdir>`/certs/idp_cert.pem
 
-* Goto SAML Keys, Export, Archive Format: PKCS12, example key/store password "1234", 
-  * Downloaded to: `<projectdir>/keystore.p12`
+4. Generate Key and Cert with `makecerts.sh`
 
-4. Extract Key and Cert from `keystore.p12`
-
+The password should be changed in file `<projectdir>/P12phrase`
 These keys/certs are stored in `<projectdir>/certs`
 
-```bash
-cd <projectdir>
-mkdir certs
-
-# asks for PEM-passphrase
-openssl pkcs12 -in keystore.p12 -nocerts -out certs/privateKey.pem -passin pass:"1234"
-```
-
-Remove Password from Private Key
-```bash
-openssl rsa -in certs/privateKey.pem -out certs/key.pem -passin pass:"1234"
-```
-
-Extract server public key
-
-```
-openssl pkcs12 -in keystore.p12 -clcerts -nokeys -out certs/server.crt -passin pass:"1234"
-```
+Upload the cert `<projectdir>/certs/client.p12` to Keycloak:
+Keycloak - clients - keys - import PKCS12 - keyAlias samlKey - password: from `<projectdir>/P12phrase`
 
 5. Add users (see Manage Users)
 
