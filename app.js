@@ -19,7 +19,8 @@ const fs = require('fs');
 const path = require('path');
 const express = require('express');
 const session = require('express-session');
-const expressHbs = require('express-handlebars');
+const { engine } = require('express-handlebars');
+
 const bodyParser = require('body-parser');
 
 const app = express();
@@ -33,12 +34,9 @@ app.use(function (req, res, next) {
 });
 
 // Register 'handelbars' extension with The Mustache Express
-app.engine('hbs', expressHbs({
-    extname: 'hbs',
-    defaultLayout: 'layout.hbs',
-    relativeTo: __dirname
-}));
-app.set('view engine', 'hbs');
+app.engine('.hbs', engine({ extname: '.hbs', defaultLayout: 'layout.hbs', relativeTo: __dirname }));
+app.set('view engine', '.hbs');
+app.set('views', './views');
 
 let memoryStore = new session.MemoryStore();
 
@@ -56,43 +54,43 @@ app.get('/', function (req, res) {
     res.render('index');
 });
 
-app.use( express.static(  path.resolve( __dirname, "public" ) ) );
+app.use(express.static(path.resolve(__dirname, "public")));
 
 const NODE_PORT = 8100
 
 let http = require('http').createServer(app);
 http.listen(NODE_PORT, () => {
-  console.log('listening on *:', NODE_PORT);
+    console.log('listening on *:', NODE_PORT);
 });
 
 /////////////////////////////////////////////////////////////////////////////80
 // Socket.IO Connection
-let socket_io = require( 'socket.io' )( http );
+let socket_io = require('socket.io')(http);
 
 function IoConnectServer(io_api, callbacks) {
     let uniqueID = 0;
     let no_of_clients = 0;
-    io_api.on( 'connection', ( socket )  => {
+    io_api.on('connection', (socket) => {
         let currentClientID = ++uniqueID;
         ++no_of_clients;
-        socket.emit( 'init', {id: currentClientID, no_of_clients});
-        socket.on( 'disconnect', function() {
+        socket.emit('init', { id: currentClientID, no_of_clients });
+        socket.on('disconnect', function () {
             --no_of_clients;
-        } );
-        for ( let cbName in callbacks ) {
-            let cb = callbacks[ cbName ];
-            socket.on( cbName, ( o ) => {
-                cb( socket, currentClientID, o );
-            } );
+        });
+        for (let cbName in callbacks) {
+            let cb = callbacks[cbName];
+            socket.on(cbName, (o) => {
+                cb(socket, currentClientID, o);
+            });
         }
     });
 }
 
 let callbacks = {
-    open: function( socket, id, o ) {
-        console.log( "open connection to client", id, o );
+    open: function (socket, id, o) {
+        console.log("open connection to client", id, o);
     },
-    update: function( socket, id, o ) {
+    update: function (socket, id, o) {
         socket.broadcast.emit("update", o); // send to all others
     }
 };
@@ -103,6 +101,7 @@ IoConnectServer(socket_io, callbacks);
 
 
 /////////////////////////////////////////////////////////////////////////////80
+// https://github.com/node-saml/passport-saml
 const saml = require('passport-saml');
 const passport = require('passport');
 
@@ -130,11 +129,12 @@ const privateKey = fs.readFileSync(__dirname + '/certs/key.pem', 'utf8');
 const saml_options = {
     callbackUrl: CALLBACK_URL,
     issuer: ISSUER,
+    signatureAlgorithm: "sha256",
     entryPoint: ENTRY_POINT,
     identifierFormat: null,
     // The decryptionPvK and privateCert both refer to the local private key 
     // downloaded from keycloak - client - SAML keys - export (format: pks12)
-    privateCert: privateKey,
+    privateKey,
     decryptionPvk: privateKey,
 
     // IDP public key from the servers meta data
@@ -173,16 +173,10 @@ app.get('/logout', (req, res) => {
 app.post('/login/callback', passport.authenticate('samlStrategy', { failureRedirect: '/auth/fail' }), (req, res, next) => {
     console.log('SSO Login ################', req.user);
     res.redirect('/saml');
-    /*
-    for (let k in req) {
-        if (typeof req[k] !== "function") {
-            console.log(k, "::", req[k]);
-        }
-    }
-    */
-
 });
 
+
+// openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout mykey.key -out certificate.crt
 
 const metadata = samlStrategy.generateServiceProviderMetadata(publicKey, publicKey);
 app.get('/metadata',
